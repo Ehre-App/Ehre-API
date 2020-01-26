@@ -1,0 +1,24 @@
+{
+  "name": "ehre-api",
+  "version": "1.0.0",
+  "description": "API for this App",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ehre-App/Ehre-API.git"
+  },
+  "author": "CCedDev,Dominik-Mellentin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ehre-App/Ehre-API/issues"
+  },
+  "homepage": "https://github.com/Ehre-App/Ehre-API#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "mysql": "^2.18.1"
+  }
+}

@@ -1,0 +1,9 @@
+{
+    "Debug" : 1,
+    "Database" : {
+        "Host" : "HOST",
+        "User" : "Ehre",
+        "Password" : "ehre",
+        "Database" : "Ehre"
+    }
+}
