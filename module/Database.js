@@ -1,5 +1,6 @@
 const config = require('./config.json');
 const mysql = require('mysql');
+const logger = require('./logger.js');
 
 var Database_Connection = mysql.createConnection({
     host: config.Database.Host,
@@ -12,7 +13,7 @@ Database_Connection.connect(function(err){
     if(err){
         throw err;
     }else{
-        console.log("[Info]Connected to Database!");
+        logger.Log("Connected to Database!");
     }
 });
 
@@ -26,7 +27,11 @@ function Command(query){
                     throw err;
                 }
             }else{
-                res(result);
+                if(result.length === 0){
+                    res(null);
+                }else{
+                    res(result);
+                }
             }
         });
     });

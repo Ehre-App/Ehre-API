@@ -15,6 +15,10 @@ app.get('/debug', function (req, res) {
     router.Debug(req, res);
 });
 
+app.post('/login',(req, res) => {
+    router.gettoken(req, res);
+});
+
 app.listen(3000, function () {
     logger.Log("Ehre-Api is running!");
 });
