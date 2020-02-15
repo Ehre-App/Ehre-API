@@ -1,7 +1,7 @@
 const config = require('./config.json');
 
 function Debug(text, value){
-    if(config.Logger.Debug == 1){
+    if(config.Debug == 1){
         console.log("[" +  new Date().toLocaleTimeString() + "]" + config.Logger.DebugPrefix + text + " : " + value);
     }
 }

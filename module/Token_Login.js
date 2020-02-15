@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const config = require('./config.json');
 const Database = require('./Database.js');
-const logger = require('./logger.js');
+const logger = require('./Logger.js');
 
 async function userLogin(username,password){
     logger.Debug("User tries to login", username);
@@ -14,7 +14,6 @@ async function userLogin(username,password){
         return null;
     }
 }
-
 
 module.exports = {
     userLogin

@@ -1,6 +1,6 @@
 const config = require('./config.json');
 const mysql = require('mysql');
-const logger = require('./logger.js');
+const logger = require('./Logger.js');
 
 var Database_Connection = mysql.createConnection({
     host: config.Database.Host,

@@ -1,9 +1,16 @@
 {
     "Debug" : 1,
     "Database" : {
-        "Host" : "HOST",
-        "User" : "Ehre",
-        "Password" : "ehre",
-        "Database" : "Ehre"
+        "Host" : "127.0.0.1",
+        "User" : "EhreUser",
+        "Password" : "Changethis",
+        "Database" : "EhreDB"
+    },
+    "Token" : {
+        "Secret" : "abc"   
+    },
+    "Logger" : {
+        "DebugPrefix" : "[DEBUG]: ",
+        "LoggerPrefix" : "[API]: "
     }
 }
