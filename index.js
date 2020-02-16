@@ -23,6 +23,9 @@ app.post('/createuser',(req, res) => {
     router.createUser(req,res);
 });
 
+app.post('/creategroup',(req, res) => {
+    router.createGroup(req, res);
+});
 
 app.listen(3000, function () {
     logger.Log("Ehre-Api is running!");

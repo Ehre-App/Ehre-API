@@ -6,7 +6,16 @@ var Database_Connection = mysql.createConnection({
     host: config.Database.Host,
     user: config.Database.User,
     password: config.Database.Password,
-    database: config.Database.Database
+    database: config.Database.Database,
+    typeCast: function (field, next) {
+        if (field.type == "BIT" && field.length == 1) {
+            var bit = field.string();
+
+            return (bit === null) ? null : bit.charCodeAt(0);
+        }
+        return next();
+    }
+    
 });
 
 Database_Connection.connect(function(err){

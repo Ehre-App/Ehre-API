@@ -2,7 +2,8 @@ const moduleTokenLogin = require('./module/Token_Login.js');
 const modulelDatabase = require('./module/Database.js');
 const modulelLogger = require('./module/Logger.js');
 const modulelVerifyToken = require('./module/Verify_Token.js');
-const moduleCreateUser = require('./module/Create_User');
+const moduleCreateUser = require('./module/Create_User.js');
+const moduleCreateGroup = require('./module/Create_Group.js');
 const config = require('./module/config.json');
 
 async function debug(req, res){
@@ -28,7 +29,7 @@ async function getToken(req, res){
     }
 }
 
-async function verifyToken(req){
+async function verifyToken(req, res){
     let verifyToken = await modulelVerifyToken.Verify(req);
     if(verifyToken == 1){
         return 1;
@@ -56,8 +57,30 @@ async function createUser(req, res){
     }
 }
 
+async function createGroup(req, res){
+    let decoded = await modulelVerifyToken.decoded(req);
+    if(await verifyToken(req, res) == 1){
+        if(req.body.groupname != null && req.body.ispublic != null && req.body.ispremium != null){
+            switch(await moduleCreateGroup.creategroup(req, decoded)){
+                case  0:
+                    res.status(200).send('Group!');
+                break;
+                case 1:
+                    res.status(401).send('You can no longer create groups');
+                break;
+                case 2:
+                    res.status(401).send('Groupname is too short');
+                break;
+            }
+        }else{
+            res.status(401).send('Not all attributes');
+        }
+    }
+}
+
 module.exports = {
     debug,
     getToken,
-    createUser
+    createUser,
+    createGroup
 }

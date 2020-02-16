@@ -20,6 +20,19 @@ function Verify(req){
     });
 }
 
+function decoded(req){
+    return new Promise(result => {
+        var token = req.headers['x-access-token'];
+        jwt.verify(token, config.Token.Secret, function(err, decoded) {
+            if(err){
+                logger.Debug("Token", err);
+            }
+            result(decoded);
+        });
+    });
+}
+
 module.exports = {
-    Verify
+    Verify,
+    decoded
 }
