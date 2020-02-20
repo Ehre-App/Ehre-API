@@ -27,6 +27,19 @@ app.post('/creategroup',(req, res) => {
     router.createGroup(req, res);
 });
 
+app.post('/addusertogroup',(req, res) => {
+    router.addusertogroup(req, res);
+});
+
+app.post('/removeuser',(req, res) => {
+    router.removeuserfromgroup(req, res);
+});
+
+app.post('/addadmin',(req, res) => {
+    router.addAdmin(req, res);
+});
+
+
 app.listen(3000, function () {
     logger.Log("Ehre-Api is running!");
 });
