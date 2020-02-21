@@ -103,6 +103,9 @@ async function addusertogroup(req, res){
                 case 4:
                     res.status(401).send('User is all already in Group');
                 break;
+                case 4:
+                    res.status(401).send('Your not a part of this Group');
+                break;
             }
         }else{
             res.status(401).send('Not all attributes');
@@ -127,6 +130,9 @@ async function removeuserfromgroup(req, res){
                 case 3:
                     res.status(401).send('You can\'t remove a Admin');
                 break;
+                case 4:
+                    res.status(401).send('Your not a part of this Group');
+                break;
             }
         }else{
             res.status(401).send('Not all attributes');
@@ -136,6 +142,7 @@ async function removeuserfromgroup(req, res){
 
 async function addAdmin(req, res){
     let decoded = await modulelVerifyToken.decoded(req);
+    
     if(await verifyToken(req, res) == 1){
         if(req.body.userid != null && req.body.groupid != null){
             switch(await moduleUserGroup.addadmin(req.body.groupid, req.body.userid , decoded)){
@@ -151,6 +158,112 @@ async function addAdmin(req, res){
                 case 3:
                     res.status(401).send('User is already a Admin');
                 break;
+                case 4:
+                    res.status(401).send('Your not a part of this Group');
+                break;
+            }
+        }else{
+            res.status(401).send('Not all attributes');
+        }
+    }
+}
+
+async function revokeadmin(req, res){
+    let decoded = await modulelVerifyToken.decoded(req);
+
+    if(await verifyToken(req, res) == 1){
+        if(req.body.userid != null && req.body.groupid != null){
+            switch(await moduleUserGroup.revokeadmin(req.body.groupid, req.body.userid , decoded)){
+                case 0:
+                    res.status(200).send('The rights form this user was removed');
+                break;
+                case 1:
+                    res.status(401).send('You are not a Admin of this Group');
+                break;
+                case 2:
+                    res.status(401).send('User is not in Group');
+                break;
+                case 3:
+                    res.status(401).send('User has no Admin right');
+                break;
+                case 4:
+                    res.status(401).send('User is the Creator of this Group');
+                break;
+                case 5:
+                    res.status(401).send('One admin is required');                   
+                break;
+                case 6:
+                    res.status(401).send('Your not a part of this Group');
+                break;
+            }
+        }else{
+            res.status(401).send('Not all attributes');
+        }
+    }
+}
+
+async function leavegroup(req, res){
+    let decoded = await modulelVerifyToken.decoded(req);
+
+    if(await verifyToken(req, res) == 1){
+        if(req.body.groupid != null){
+            switch(await moduleUserGroup.leavegroup(req.body.groupid, decoded)){
+                case 0:
+                    res.status(200).send('You left the Group'); 
+                break;
+                case 1:
+                    res.status(401).send('Your not a part of this Group');
+                break;
+                case 2:
+                    res.status(401).send('You cant\'t leave this Group');                   
+                break;
+            }
+        }else{
+            res.status(401).send('Not all attributes');
+        }
+    }
+}
+
+async function deletegroup(req, res){
+    let decoded = await modulelVerifyToken.decoded(req);
+
+    if(await verifyToken(req, res) == 1){
+        if(req.body.groupid != null){
+            switch(await moduleUserGroup.deletegroup(req.body.groupid, decoded)){
+                case 0:
+                    res.status(200).send('Group deletet'); 
+                break;
+                case 1:
+                    res.status(401).send('Group does not exist');
+                break;
+                case 2:
+                    res.status(401).send('Your not a part of this Group');
+                break;
+            }
+        }else{
+            res.status(401).send('Not all attributes');
+        }
+    }
+}
+
+async function joingroup(req, res){
+    let decoded = await modulelVerifyToken.decoded(req);
+
+    if(await verifyToken(req, res) == 1){
+        if(req.body.groupid != null){
+            switch(await moduleUserGroup.joingroup(req.body.groupid, decoded)){
+                case 0:
+                    res.status(200).send('You joined the Group'); 
+                break;
+                case 1:
+                    res.status(401).send('Your already in this Group');
+                break;
+                case 2:
+                    res.status(401).send('The Group is full');
+                break;
+                case 3:
+                    res.status(401).send('The Group does not exist');
+                break;
             }
         }else{
             res.status(401).send('Not all attributes');
@@ -165,5 +278,9 @@ module.exports = {
     createGroup,
     addusertogroup,
     removeuserfromgroup,
-    addAdmin
+    addAdmin,
+    revokeadmin,
+    leavegroup,
+    deletegroup,
+    joingroup
 }

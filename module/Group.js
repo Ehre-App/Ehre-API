@@ -5,7 +5,7 @@ async function creategroup(req, decoded){
     let groupcount = await Database.Command('SELECT COUNT(GroupID) as GroupID FROM groups WHERE GroupCreator =  + ' + decoded.id + ';');
     let ispremium = await Database.Command('SELECT IsPremium FROM user WHERE UserID =  + ' + decoded.id + ';');
     let groupnameexist = await Database.Command('SELECT Groupname FROM groups WHERE Groupname = "' + req.body.groupname + '"');
-
+//public only one name!
     return new Promise(result => {
         if(groupnameexist == null){
             if(groupcount[0].GroupID <= 3 && ispremium[0].IsPremium == 0 || groupcount[0].GroupID <= 6 && ispremium[0].IsPremium == 1){    
