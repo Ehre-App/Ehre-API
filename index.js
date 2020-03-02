@@ -59,8 +59,8 @@ app.post('/searchgroup',(req, res) => {
     
 });
 
-app.post('/mygroups',(req, res) => {
-
+app.get('/mygroups',(req, res) => {
+    router.mygroups(req, res);
 });
 
 app.post('/useringroup',(req, res) => {

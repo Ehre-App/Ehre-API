@@ -1,35 +1,74 @@
 const Database = require('./Database.js');
 const logger = require('./Logger.js');
 
-async function creategroup(req, decoded){
-    let groupcount = await Database.Command('SELECT COUNT(GroupID) as GroupID FROM groups WHERE GroupCreator =  + ' + decoded.id + ';');
-    let ispremium = await Database.Command('SELECT IsPremium FROM user WHERE UserID =  + ' + decoded.id + ';');
-    let groupnameexist = await Database.Command('SELECT Groupname FROM groups WHERE Groupname = "' + req.body.groupname + '"');
-//public only one name!
+async function creategroup(Groupname, IsPublic, IsPremium, decoded){
+    let GroupCout = await Database.Command('SELECT COUNT(GroupID) as GroupID FROM groups WHERE GroupCreator =  + ' + decoded.id + ';');
+    let GroupnameExist = await Database.Command('SELECT Groupname FROM groups WHERE Groupname = "' + Groupname + '" AND GroupCreator = ' + decoded.id);
+    let PublicGroupExist = await Database.Command('SELECT Groupname FROM groups WHERE Groupname = "' + Groupname + '" AND IsPublic = 1');
+
     return new Promise(result => {
-        if(groupnameexist == null){
-            if(groupcount[0].GroupID <= 3 && ispremium[0].IsPremium == 0 || groupcount[0].GroupID <= 6 && ispremium[0].IsPremium == 1){    
-                if(req.body.groupname.length > 3){
-                    if(ispremium[0].IsPremium == 0){
-                        Database.Command('INSERT INTO groups(Groupname,IsPremium,IsPublic,GroupCreator)VALUES("' + req.body.groupname + '",' + 0 + ',' + req.body.ispublic + ',' + decoded.id + ');');
-                        logger.Debug("Group " + req.body.groupname + " was created by", decoded.id);
+        if(Groupname.length > 3){
+            if(IsPublic == 0){
+                if(GroupnameExist == null){
+                    if(GroupCout[0].GroupID <= 3 && IsPremium == 0 || GroupCout[0].GroupID <= 6 && IsPremium == 1){
+                        logger.Debug('Private Group "' + Groupname + '" was created by', decoded.id);
+                        Database.Command('INSERT INTO groups(Groupname,IsPremium,IsPublic,GroupCreator)VALUES("' + Groupname + '",' + IsPremium + ',0,' + decoded.id + ')');
+                        result(0);
                     }else{
-                        logger.Debug("Group " + req.body.groupname + " was created by", decoded.id);
-                        Database.Command('INSERT INTO groups(Groupname,IsPremium,IsPublic,GroupCreator)VALUES("' + req.body.groupname + '",' + 1 + ',' + req.body.ispublic + ',' + decoded.id + ');');
+                        result(1);
                     }
-                    result(0);
                 }else{
                     result(2);
                 }
             }else{
-                result(1);
+                if(PublicGroupExist == null){
+                    if(GroupCout[0].GroupID <= 3 && IsPremium == 0 || GroupCout[0].GroupID <= 6 && IsPremium == 1){
+                        logger.Debug('Public Group "' + Groupname + '" was created by', decoded.id);
+                        Database.Command('INSERT INTO groups(Groupname,IsPremium,IsPublic,GroupCreator)VALUES("' + Groupname + '",' + IsPremium + ',1,' + decoded.id + ')');
+                        result(0);
+                    }else{
+                        result(1);
+                    }
+                }else{
+                    result(3);
+                }
             }
         }else{
-            result(3);
+            result(4);
         }
     });
 }
 
+async function deletegroup(GroupID, decoded){
+    let UserCreator = await Database.Command('SELECT GroupCreator FROM groups WHERE GroupID =' + GroupID);
+    let UserinGroup = await Database.Command('SELECT UserID FROM useringroup WHERE GroupID =' + GroupID);
+    let Group = await Database.Command('SELECT GroupID FROM groups WHERE GroupID =' + GroupID);
+
+    return new Promise(result => {
+        if(Group != null){
+            if(UserCreator[0].GroupCreator == decoded.id){
+                for(i = 0; i < UserinGroup.length; i++){
+                    console.log(i);
+                    useroutgroup(GroupID,UserinGroup[i].UserID);
+                }
+                Database.Command('DELETE FROM groups WHERE GroupID =' + GroupID);
+                logger.Debug('Group was removed', GroupID);
+                result(0);
+            }else{
+                result(2);
+            }
+       }else{
+           result(1)
+       }
+    });
+}
+
+async function useroutgroup(GroupID, UserID){
+    Database.Command('DELETE FROM useringroup WHERE UserID =' + UserID + ' AND GroupID =' + GroupID);
+    logger.Debug('User ' + UserID + ' was removed from Group', GroupID);
+}
+
 module.exports = {
-    creategroup
+    creategroup,
+    deletegroup
 }

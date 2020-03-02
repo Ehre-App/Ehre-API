@@ -5,6 +5,7 @@ const modulelVerifyToken = require('./module/Verify_Token.js');
 const moduleCreateUser = require('./module/Create_User.js');
 const moduleGroup = require('./module/Group.js');
 const moduleUserGroup = require('./module/User_Group.js');
+const moduleUser = require('./module/User.js');
 const config = require('./module/config.json');
 
 async function debug(req, res){
@@ -60,9 +61,10 @@ async function createUser(req, res){
 
 async function createGroup(req, res){
     let decoded = await modulelVerifyToken.decoded(req);
+
     if(await verifyToken(req, res) == 1){
         if(req.body.groupname != null && req.body.ispublic != null){
-            switch(await moduleGroup.creategroup(req, decoded)){
+            switch(await moduleGroup.creategroup(req.body.groupname, req.body.ispublic, decoded.IsPremium, decoded)){
                 case 0:
                     res.status(200).send('Group!');
                     moduleUserGroup.useringroup(req.body.groupname, decoded.id);
@@ -71,10 +73,13 @@ async function createGroup(req, res){
                     res.status(401).send('You can no longer create groups');
                 break;
                 case 2:
-                    res.status(401).send('Groupname is too short');
+                    res.status(401).send('You already have a group with this name');
                 break;
                 case 3:
-                    res.status(401).send('You already have a group with this name');
+                    res.status(401).send('A Public Group with this name already exists');
+                break;
+                case 4:
+                    res.status(401).send('Groupname is too short');
                 break;
             }
         }else{
@@ -122,13 +127,13 @@ async function removeuserfromgroup(req, res){
                     res.status(200).send('User removed');
                 break;
                 case 1:
-                    res.status(401).send('You are not a Admin of this Group');
+                    res.status(401).send('You are not an Admin of this Group');
                 break;
                 case 2:
                     res.status(401).send('User is not in Group');
                 break;
                 case 3:
-                    res.status(401).send('You can\'t remove a Admin');
+                    res.status(401).send('You can\'t remove an Admin');
                 break;
                 case 4:
                     res.status(401).send('Your not a part of this Group');
@@ -226,10 +231,9 @@ async function leavegroup(req, res){
 
 async function deletegroup(req, res){
     let decoded = await modulelVerifyToken.decoded(req);
-
     if(await verifyToken(req, res) == 1){
         if(req.body.groupid != null){
-            switch(await moduleUserGroup.deletegroup(req.body.groupid, decoded)){
+            switch(await moduleGroup.deletegroup(req.body.groupid, decoded)){
                 case 0:
                     res.status(200).send('Group deletet'); 
                 break;
@@ -271,6 +275,17 @@ async function joingroup(req, res){
     }
 }
 
+async function mygroups(req, res){
+    let decoded = await modulelVerifyToken.decoded(req);
+    let Groups = await moduleUser.mygroups(decoded.id);
+
+    if(await verifyToken(req, res) == 1){
+        res.status(200).send(Groups);
+    }else{
+        res.status(401).send('Not all attributes');
+    }
+}
+
 module.exports = {
     debug,
     getToken,
@@ -282,5 +297,6 @@ module.exports = {
     revokeadmin,
     leavegroup,
     deletegroup,
-    joingroup
+    joingroup,
+    mygroups
 }

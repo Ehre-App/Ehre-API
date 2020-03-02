@@ -10,8 +10,6 @@ async function adduser(req, decoded){
     let isuseringroup = await Database.Command('SELECT UserID FROM useringroup WHERE GroupID = ' + req.body.groupid + ' AND UserID =' + req.body.adduser);
     let userexist = await Database.Command('SELECT UserID FROM user WHERE UserID =' + req.body.adduser); 
 
-    console.log('SELECT Isadmin FROM useringroup WHERE UserID = ' + decoded.id + ' AND GroupID = ' + req.body.groupid);
-
     return new Promise(result => {
         if(userisadmin != null){
             if(userisadmin[0].Isadmin == 1){
@@ -47,11 +45,6 @@ async function useringroup(Groupname, UserId){
             logger.Debug('User ' + UserId + ' Added into useringroup | Group', Groupinfos[0].GroupID);
         }
     }
-}
-
-async function useroutgroup(GroupID, UserID){
-        Database.Command('DELETE FROM useringroup WHERE UserID =' + UserID + ' AND GroupID =' + GroupID);
-        logger.Debug('User ' + UserID + 'was removed from Group', GroupID);
 }
 
 async function removeuser(GroupID, UserId, decoded){
@@ -165,30 +158,6 @@ async function leavegroup(GroupID, decoded){
     });
 }
 
-async function deletegroup(GroupID, decoded){
-    let UserCreator = await Database.Command('SELECT GroupCreator FROM groups WHERE GroupID =' + GroupID);
-    let UserinGroup = await Database.Command('SELECT UserID FROM useringroup WHERE GroupID =' + GroupID);
-    let Group = await Database.Command('SELECT GroupID FROM groups WHERE GroupID =' + GroupID);
-
-    return new Promise(result => {
-        if(Group != null){
-            if(UserCreator[0].GroupCreator == decoded.id){
-                for(i = 0; i < UserinGroup.length; i++){
-                    console.log(i);
-                    useroutgroup(GroupID,UserinGroup[i].UserID);
-                }
-                Database.Command('DELETE FROM groups WHERE GroupID =' + GroupID);
-                logger.Debug('Group was removed', GroupID);
-                result(0);
-            }else{
-                result(2);
-            }
-       }else{
-           result(1)
-       }
-    });
-}
-
 async function joingroup(GroupID, decoded){
     let Group = await Database.Command('SELECT GroupID FROM groups WHERE GroupID =' + GroupID);
     let groupinfo = await Database.Command('SELECT GroupID,IsPremium,IsPublic FROM groups WHERE GroupID = ' + GroupID);
@@ -221,6 +190,5 @@ module.exports = {
     addadmin,
     revokeadmin,
     leavegroup,
-    deletegroup,
     joingroup
 }
