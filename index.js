@@ -64,7 +64,7 @@ app.get('/mygroups',(req, res) => {
 });
 
 app.post('/useringroup',(req, res) => {
-
+    router.useringroup(req, res);
 });
 
 app.listen(3000, function () {

@@ -281,8 +281,30 @@ async function mygroups(req, res){
 
     if(await verifyToken(req, res) == 1){
         res.status(200).send(Groups);
-    }else{
-        res.status(401).send('Not all attributes');
+    }
+}
+
+async function useringroup(req, res){
+    let decoded = await modulelVerifyToken.decoded(req);
+    let users = await moduleUser.usersingroup(req.body.groupid, decoded);
+
+    if(await verifyToken(req, res) == 1){
+        if(req.body.groupid != null){
+            switch(await moduleUser.usersingroup(req.body.groupid, decoded)){
+                case 0:
+                    res.status(401).send('The Group does not exist');
+                break;
+                case 1:
+                    res.status(401).send('Your not a part of this Group');
+                break;
+                default:
+                    res.status(200).send(users); 
+                break;
+            }
+        }else{
+            res.status(401).send('Not all attributes');
+        }
+        
     }
 }
 
@@ -298,5 +320,6 @@ module.exports = {
     leavegroup,
     deletegroup,
     joingroup,
-    mygroups
+    mygroups,
+    useringroup
 }

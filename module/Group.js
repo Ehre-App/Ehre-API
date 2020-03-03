@@ -70,5 +70,5 @@ async function useroutgroup(GroupID, UserID){
 
 module.exports = {
     creategroup,
-    deletegroup
+    deletegroup,
 }
