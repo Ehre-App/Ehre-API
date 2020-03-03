@@ -56,7 +56,7 @@ app.post('/joingroup',(req, res) => {
 });
 
 app.post('/searchgroup',(req, res) => {
-    
+    router.searchPublicGroup(req, res);
 });
 
 app.get('/mygroups',(req, res) => {

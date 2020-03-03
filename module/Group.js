@@ -63,6 +63,14 @@ async function deletegroup(GroupID, decoded){
     });
 }
 
+async function searchpublicgroups(Groupname){
+    let publicGroups = await Database.Command('SELECT Groupname,GroupID FROM groups WHERE Groupname LIKE "' + Groupname + '%" AND IsPublic = 1');
+
+    return new Promise(result => {
+        result(publicGroups);
+    });
+}
+
 async function useroutgroup(GroupID, UserID){
     Database.Command('DELETE FROM useringroup WHERE UserID =' + UserID + ' AND GroupID =' + GroupID);
     logger.Debug('User ' + UserID + ' was removed from Group', GroupID);
@@ -71,4 +79,5 @@ async function useroutgroup(GroupID, UserID){
 module.exports = {
     creategroup,
     deletegroup,
+    searchpublicgroups
 }

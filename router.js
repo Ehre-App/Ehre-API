@@ -308,6 +308,17 @@ async function useringroup(req, res){
     }
 }
 
+async function searchPublicGroup(req, res){
+    if(await verifyToken(req, res) == 1){
+        if(req.body.groupname != null){
+            let groups = await moduleGroup.searchpublicgroups(req.body.groupname);
+            res.status(200).send(groups); 
+        }else{
+            res.status(401).send('Not all attributes');
+        }
+    }
+}
+
 module.exports = {
     debug,
     getToken,
@@ -321,5 +332,6 @@ module.exports = {
     deletegroup,
     joingroup,
     mygroups,
-    useringroup
+    useringroup,
+    searchPublicGroup
 }
