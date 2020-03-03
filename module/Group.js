@@ -48,7 +48,6 @@ async function deletegroup(GroupID, decoded){
         if(Group != null){
             if(UserCreator[0].GroupCreator == decoded.id){
                 for(i = 0; i < UserinGroup.length; i++){
-                    console.log(i);
                     useroutgroup(GroupID,UserinGroup[i].UserID);
                 }
                 Database.Command('DELETE FROM groups WHERE GroupID =' + GroupID);
@@ -76,8 +75,34 @@ async function useroutgroup(GroupID, UserID){
     logger.Debug('User ' + UserID + ' was removed from Group', GroupID);
 }
 
+async function ranksingroups(GroupID, decoded){
+    let Group = await Database.Command('SELECT GroupID FROM groups WHERE GroupID =' + GroupID);
+    let Groupinfos = await Database.Command('SELECT GroupID,UserID FROM useringroup WHERE GroupID = "' + GroupID + '" AND UserID = '+ decoded.id);
+
+    return new Promise(result => {
+        if(Group != null){
+            if(Groupinfos != null){
+                result(0);
+            }else{
+                result(2);
+            }
+        }else{
+            result(1);
+        }
+    });
+}
+
+async function ranks(GroupID){
+    let Ranks = await Database.Command('SELECT Rankvalue,Rankname FROM rankingroup WHERE GroupID = ' + GroupID);
+    return new Promise(result => {
+        result(Ranks);
+    });
+}
+
 module.exports = {
     creategroup,
     deletegroup,
-    searchpublicgroups
+    searchpublicgroups,
+    ranksingroups,
+    ranks
 }

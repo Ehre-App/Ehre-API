@@ -303,8 +303,7 @@ async function useringroup(req, res){
             }
         }else{
             res.status(401).send('Not all attributes');
-        }
-        
+        }        
     }
 }
 
@@ -313,6 +312,28 @@ async function searchPublicGroup(req, res){
         if(req.body.groupname != null){
             let groups = await moduleGroup.searchpublicgroups(req.body.groupname);
             res.status(200).send(groups); 
+        }else{
+            res.status(401).send('Not all attributes');
+        }
+    }
+}
+
+async function ranksingroups(req, res){
+    let decoded = await modulelVerifyToken.decoded(req);
+    if(await verifyToken(req, res) == 1){
+        if(req.body.groupid != null){
+            switch(await moduleGroup.ranksingroups(req.body.groupid, decoded)){
+                case 0:
+                    let ranks = await moduleGroup.ranks(req.body.groupid);
+                    res.status(200).send(ranks); 
+                break;
+                case 1:
+                    res.status(401).send('The Group does not exist');
+                break;
+                case 2:
+                    res.status(401).send('Your not a part of this Group');
+                break;
+            }
         }else{
             res.status(401).send('Not all attributes');
         }
@@ -333,5 +354,6 @@ module.exports = {
     joingroup,
     mygroups,
     useringroup,
-    searchPublicGroup
+    searchPublicGroup,
+    ranksingroups
 }

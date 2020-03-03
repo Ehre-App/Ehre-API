@@ -67,6 +67,10 @@ app.post('/useringroup',(req, res) => {
     router.useringroup(req, res);
 });
 
+app.post('/ranksingroup',(req, res) => {
+    router.ranksingroups(req, res);
+});
+
 app.listen(3000, function () {
     logger.Log("Ehre-Api is running!");
 });
