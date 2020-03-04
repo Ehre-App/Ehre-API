@@ -94,8 +94,55 @@ async function ranksingroups(GroupID, decoded){
 
 async function ranks(GroupID){
     let Ranks = await Database.Command('SELECT Rankvalue,Rankname FROM rankingroup WHERE GroupID = ' + GroupID);
+    
     return new Promise(result => {
         result(Ranks);
+    });
+}
+
+async function userrank(GroupID, decoded){
+    let Group = await Database.Command('SELECT GroupID FROM groups WHERE GroupID =' + GroupID);
+    let Groupinfos = await Database.Command('SELECT GroupID,UserID FROM useringroup WHERE GroupID = "' + GroupID + '" AND UserID = '+ decoded.id);
+
+    return new Promise(result => {
+        if(Group != null){
+            if(Groupinfos != null){
+                result(0);
+            }else{
+                result(2);
+            }
+        }else{
+            result(1);
+        }
+    });
+}
+
+async function userandranks(GroupID){
+    let Ranks = await Database.Command('SELECT Rankvalue,Rankname FROM rankingroup WHERE GroupID = ' + GroupID);
+    let user = await Database.Command('SELECT user.Username,useringroup.Ehrevalue FROM user INNER JOIN useringroup ON useringroup.UserID = user.UserID WHERE useringroup.GroupID =' + GroupID);
+    var rank = [];
+    var users = [];
+    var rankuser = [{}];
+
+    return new Promise(result => {
+        user.forEach(user => {
+            var rank_ = [];
+            Ranks.forEach(ranks => {
+                if(user.Ehrevalue >= ranks.Rankvalue){
+                    rank_.push(ranks.Rankname);
+                    
+                }
+           });
+    
+           users.push(user.Username);
+           rank.push(rank_[rank_.length -1]);
+        });
+    
+        for(var i = 0; i < user.length; i++){
+            rankuser[i] = { "Username" : users[i], "Rank" : rank[i]};
+        }
+
+        result(rankuser);
     });
 }
 
@@ -104,5 +151,7 @@ module.exports = {
     deletegroup,
     searchpublicgroups,
     ranksingroups,
-    ranks
+    ranks,
+    userrank,
+    userandranks
 }

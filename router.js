@@ -1,5 +1,4 @@
 const moduleTokenLogin = require('./module/Token_Login.js');
-const modulelDatabase = require('./module/Database.js');
 const modulelLogger = require('./module/Logger.js');
 const modulelVerifyToken = require('./module/Verify_Token.js');
 const moduleCreateUser = require('./module/Create_User.js');
@@ -320,6 +319,7 @@ async function searchPublicGroup(req, res){
 
 async function ranksingroups(req, res){
     let decoded = await modulelVerifyToken.decoded(req);
+
     if(await verifyToken(req, res) == 1){
         if(req.body.groupid != null){
             switch(await moduleGroup.ranksingroups(req.body.groupid, decoded)){
@@ -340,6 +340,29 @@ async function ranksingroups(req, res){
     }
 }
 
+async function userranks(req, res){
+    let decoded = await modulelVerifyToken.decoded(req);
+   
+    if(await verifyToken(req, res) == 1){
+        if(req.body.groupid != null){
+            switch(await moduleGroup.userrank(req.body.groupid, decoded)){
+                case 0:
+                    let ranks = await moduleGroup.userandranks(req.body.groupid);
+                    res.status(200).send(ranks); 
+                break;
+                case 1:
+                    res.status(401).send('The Group does not exist');
+                break;
+                case 2:
+                    res.status(401).send('Your not a part of this Group');
+                break;
+            }
+        }
+    }
+
+    
+}
+
 module.exports = {
     debug,
     getToken,
@@ -355,5 +378,6 @@ module.exports = {
     mygroups,
     useringroup,
     searchPublicGroup,
-    ranksingroups
+    ranksingroups,
+    userranks
 }
