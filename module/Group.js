@@ -93,7 +93,7 @@ async function ranksingroups(GroupID, decoded){
 }
 
 async function ranks(GroupID){
-    let Ranks = await Database.Command('SELECT Rankvalue,Rankname FROM rankingroup WHERE GroupID = ' + GroupID);
+    let Ranks = await Database.Command('SELECT RankID,Rankvalue,Rankname FROM rankingroup WHERE GroupID = ' + GroupID);
     
     return new Promise(result => {
         result(Ranks);
