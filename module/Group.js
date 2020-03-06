@@ -129,8 +129,7 @@ async function userandranks(GroupID){
             var rank_ = [];
             Ranks.forEach(ranks => {
                 if(user.Ehrevalue >= ranks.Rankvalue){
-                    rank_.push(ranks.Rankname);
-                    
+                    rank_.push(ranks.Rankname); 
                 }
            });
     
@@ -146,6 +145,28 @@ async function userandranks(GroupID){
     });
 }
 
+async function addRank(GroupID, decoded, Rankvalue, Rankname){
+    let Group = await Database.Command('SELECT GroupID FROM groups WHERE GroupID =' + GroupID);
+    let Groupinfos = await Database.Command('SELECT GroupID,UserID,Isadmin FROM useringroup WHERE GroupID = "' + GroupID + '" AND UserID = '+ decoded.id);
+    let Rank = await Database.Command('SELECT Rankvalue,Rankname FROM rankingroup WHERE GroupID =' + GroupID + ' AND Rankvalue =' + Rankvalue);
+
+    return new Promise(result => {
+        if(Group != null){
+            if(Groupinfos[0].Isadmin == 1){
+                if(Rank == null){
+                    Database.Command('INSERT INTO rankingroup(GroupID, Rankvalue, Rankname) VALUES (' + GroupID + ',' + Rankvalue + ',"' + Rankname + '")');                    result(0);
+                }else{
+                    result(3);
+                }
+            }else{
+                result(2);
+            }
+        }else{
+            result(1);
+        }
+    });
+}
+
 module.exports = {
     creategroup,
     deletegroup,
@@ -153,5 +174,6 @@ module.exports = {
     ranksingroups,
     ranks,
     userrank,
-    userandranks
+    userandranks,
+    addRank
 }

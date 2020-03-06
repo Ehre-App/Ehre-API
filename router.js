@@ -357,10 +357,35 @@ async function userranks(req, res){
                     res.status(401).send('Your not a part of this Group');
                 break;
             }
+        }else{
+            res.status(401).send('Not all attributes');
+        }
+    }  
+}
+
+async function addRank(req, res){
+    let decoded = await modulelVerifyToken.decoded(req);
+
+    if(await verifyToken(req, res) == 1){
+        if(req.body.groupid != null && req.body.rankvalue != null && req.body.Rankname != null){
+            switch(await moduleGroup.addRank(req.body.groupid, decoded, req.body.rankvalue, req.body.Rankname)){
+                case 0:
+                    res.status(401).send('Rank Createt');
+                break;
+                case 1:
+                    res.status(401).send('The Group does not exist');
+                break;
+                case 2:
+                    res.status(401).send('You are not a Admin of this Group');
+                break;
+                case 3:
+                    res.status(401).send('You already have rank with this value');
+                break;
+            }
+        }else{
+            res.status(401).send('Not all attributes');
         }
     }
-
-    
 }
 
 module.exports = {
@@ -379,5 +404,6 @@ module.exports = {
     useringroup,
     searchPublicGroup,
     ranksingroups,
-    userranks
+    userranks,
+    addRank
 }
